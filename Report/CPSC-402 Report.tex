@@ -184,7 +184,29 @@ This section will contain your solutions to homework.
 
 \subsection{Week 2}
 
-\ldots
+\subsubsection{2.3.4-a: The set of all strings {0-9} such that the final digit has appeared before}
+Regular Expression: $\Sigma^*0\Sigma^*0+...$
+\includegraphics[scale=0.4]{Images/2.3.4a.png}
+
+\subsubsection{2.3.4-b: The set of all strings {0-9} such that the final digit has not appeared before}
+Regular Expression: $\{1-9\}0+\{0,2-9\}1...$
+\includegraphics[scale=0.4]{Images/2.3.4b.png}
+
+\subsubsection{2.3.4-c: The set of all strings {0,1} such that there are two 0's separated by a number of positions that is a multiple of 4, including 0}
+Regular Expression: $\Sigma^*0\Sigma^{4*}0\Sigma^*$
+\includegraphics[scale=0.4]{Images/2.3.4c.png}
+
+\subsubsection{2.5.3-a: The set of all strings {a,b,c} consisting of zero or more a's followed by zero or more b's followed by zero or more c's}
+Regular Expression: $a^*b^*c^*$
+\includegraphics[scale=0.4]{Images/2.5.3a.png}
+
+\subsubsection{2.5.3-b: The set of all strings consisting of either 01 repeated one or more times or 010 repeated one or more times}
+Regular Expression: $(01)^++(010)^+$
+\includegraphics[scale=0.4]{Images/2.5.3b.png}
+
+\subsubsection{2.5.3-c: The set of all strings {0,1} where at least one of the last ten positions is a 1}
+Regular Expression: $\Sigma^*1\Sigma^9+\Sigma^*1\Sigma^8...+\Sigma^*1$
+\includegraphics[scale=0.4]{Images/2.5.3c.png}
 
 \section{Project}
 
