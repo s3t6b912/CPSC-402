@@ -61,122 +61,15 @@
 \maketitle
 
 \begin{abstract}
-Short  summary of purpose and content.  
 \end{abstract}
 
 \tableofcontents
 
 \section{Introduction}\label{intro}
 
-Replace this entire Section~\ref{intro} with your own short introduction. 
-
-\subsection{General Remarks}
-
-First you need to \href{https://www.latex-project.org/get/}{download and install} LaTeX.\footnote{Links are typeset in blue, but you can change the layout and color of the links if you locate the  \texttt{hypersetup} command.}
-%
-For quick experimentation, you can use an online editor such as \href{https://www.overleaf.com/learn}{Overleaf}. But to grade the report I will used the time-stamped pdf-files in your git repository.  
-
- 
-\medskip\noindent
-LaTeX is a markup language (as is, for example, HTML). The source code is in a \verb+.tex+ file and needs to be compiled for viewing, usually to \verb+.pdf+.
-
-
-\medskip\noindent
-If you want to change the default layout, you need to type commands. For example, \verb+\medskip+ inserts a medium vertical space and \verb+\noindent+ starts a paragraph without indentation.
- 
-\medskip\noindent
-Mathematics is typeset between double dollars, for example $$x+y=y+x.$$
-
-
-\subsection{LaTeX Resources}
-
-I start a new subsection, so that you can see how it appears in the table of contents.
-
-\subsubsection{Subsubsections}
-
-Sometimes it is good to have subsubsections.
-
-\subsubsection{Itemize and enumerate}
-
-\begin{itemize}
-\item This is how you itemize in LaTeX.
-\item I think a good way to learn LaTeX is by starting from this template file and build it up step by step. Often stackoverflow will answer your questions. But here are a few resources:
-  \begin{enumerate}
-  \item \href{https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes}{Learn LaTeX in 30 minutes}
-  \item \href{https://www.latex-project.org/}{LaTeX – A document preparation system}\end{enumerate}
-\end{itemize}
-
-\subsubsection{Typesetting Code}
-
-A typical project will involve code. For the example below I took the LaTeX code from \href{https://stackoverflow.com/a/3175141/4600290}{stackoverflow} and the Haskell code from \href{https://hackmd.io/@alexhkurz/HylLKujCP}{my tutorial}.
-
-\begin{lstlisting}
--- run the transition function on a word and a state
-run :: (State -> Char -> State) -> State -> [Char] -> State
-run delta q [] = q
-run delta q (c:cs) = run delta (delta q c) cs 
-\end{lstlisting}
-%
-Short snippets such as \texttt{run :: (State -> Char -> State) -> State -> [Char] -> State} can also be directly fitted into text. There are several ways of doing this, for example, \verb@run :: (State -> Char -> State) -> State -> [Char] -> State@ is slightly different in terms of spaces and linebreaking (and can lead to layout that is better avoided), as is
-\begin{verbatim}run :: (State -> Char -> State) -> State -> [Char] -> State\end{verbatim}
-
-\noindent
-For more on the topic see \href{https://www.overleaf.com/latex/examples/code-presentations-example-different-ways-shown-in-beamer-metropolis/tsxpnyjbhbds}{Code-Presentations Example}.
-
-\medskip\noindent
-Generally speaking,  the methods for displaying code discussed above work well only for short listings of code. For entire programs, it is better to have external links to, for example, Github or \href{https://replit.com/@alexhkurz/automata01#main.hs}{Replit} (click on the "Run" button and/or the ``Code" tab).
-
-\subsubsection{Including Graphics}
-
-By way of example, I include here a screenshot from the book \cite{Hopcroft}.
-
-\includegraphics{automaton-example.png}
-
-\noindent
-You can use the same technique to include any handwritten drawings.
-
-\subsubsection{More Mathematics}
-
-We have already seen $x+y=y+x$ as an example of inline maths. We can also typeset mathematics in display mode, for example
-$$\frac x y =\frac{xy}{y^2},$$
-
-\noindent
-Here is an example of equational reasoning that spans several lines:
-\begin{align*}
-{\rm fib}(3)
-& = {\rm fib}(1) +{\rm fib}(2)  & {\rm fib}(n+2) = {\rm fib}(n)  + {\rm fib}(n+1) \\
-& = {\rm fib}(1) +{\rm fib}(0)  + {\rm fib}(1) & {\rm fib}(n+2) = {\rm fib}(n)  + {\rm fib}(n+1) \\
-& = 1 + 0  +1 & {\rm fib}(0) = 0,   {\rm fib}(1) = 1\\
-& = 2 & {\rm arithmetic}
-\end{align*}
-
 \subsubsection{Definitons, Examples, Theorems, Etc}
 
-\begin{definition} 
-This is a definition.
-\end{definition}
-
-\begin{example}
-This is an example.
-\end{example}
-
-\begin{proposition}
-This is a proposition.
-\end{proposition}
-
-\begin{theorem}
-This is a theorem.
-\end{theorem}
-
-\noindent You can also create your own environment, eg if you want to have Question, Notation, Conjecture, etc.
-
-\subsection{Plagiarism}
-
-To avoid plagiarism, make sure that, in addition to my course notes, you also cite all the external sources you use. Make sure you cite your references throughout your text, not only at the end.
-
 \section{Homework}\label{homework}
-
-This section will contain your solutions to homework. 
 
 \subsection{Week 1}
 
@@ -185,48 +78,65 @@ This section will contain your solutions to homework.
 \subsection{Week 2}
 
 \subsubsection{2.3.4-a: The set of all strings {0-9} such that the final digit has appeared before}
-Regular Expression: $\Sigma^*0\Sigma^*0+...$
+Regular Expression: $\Sigma^*0\Sigma^*0+...$ add sigma def
+
 \includegraphics[scale=0.4]{Images/2.3.4a.png}
 
 \subsubsection{2.3.4-b: The set of all strings {0-9} such that the final digit has not appeared before}
 Regular Expression: $\{1-9\}0+\{0,2-9\}1...$
+
 \includegraphics[scale=0.4]{Images/2.3.4b.png}
 
 \subsubsection{2.3.4-c: The set of all strings {0,1} such that there are two 0's separated by a number of positions that is a multiple of 4, including 0}
-Regular Expression: $\Sigma^*0\Sigma^{4*}0\Sigma^*$
+Regular Expression: $\Sigma^*0\Sigma^{4*}0\Sigma^*$ :wrong automata, add another state after q5 with a zero transition and make it accepting
+
 \includegraphics[scale=0.4]{Images/2.3.4c.png}
 
 \subsubsection{2.5.3-a: The set of all strings {a,b,c} consisting of zero or more a's followed by zero or more b's followed by zero or more c's}
 Regular Expression: $a^*b^*c^*$
+
 \includegraphics[scale=0.4]{Images/2.5.3a.png}
 
 \subsubsection{2.5.3-b: The set of all strings consisting of either 01 repeated one or more times or 010 repeated one or more times}
 Regular Expression: $(01)^++(010)^+$
+
 \includegraphics[scale=0.4]{Images/2.5.3b.png}
 
 \subsubsection{2.5.3-c: The set of all strings {0,1} where at least one of the last ten positions is a 1}
-Regular Expression: $\Sigma^*1\Sigma^9+\Sigma^*1\Sigma^8...+\Sigma^*1$
+Regular Expression: $\Sigma^*1\Sigma^9+\Sigma^*1\Sigma^8...+\Sigma^*1$ : remove loop on the accept state
+
 \includegraphics[scale=0.4]{Images/2.5.3c.png}
+
+\subsection{Week 3}
+
+\includegraphics[scale=0.2]{Images/Week3.png}
+
+\includegraphics[scale=0.4]{Images/2.3.1.png}
+
+\includegraphics[scale=0.2]{Images/Week3a.png}
+
+\includegraphics[scale=0.4]{Images/2.3.2.png}
+
+\begin{lstlisting}
+-- convert an NFA to a DFA
+nfa2dfa :: NFA s -> DFA [s]
+nfa2dfa nfa = DFA {
+  -- exercise: correct the next three definitions 
+  dfa_initial = [(nfa_initial nfa)],
+  dfa_final = let
+    final qs = disjunction (map (nfa_final nfa) qs)
+    in final,
+  dfa_delta = let
+    delta [] c = []
+    delta (q:qs) c = concat [nfa_delta nfa q c, delta qs c]
+    in delta }
+\end{lstlisting}
+
+The code above is my modifications to the automata05.hs code that converts a non epsilon NFA to a DFA. I have run it with several example strings and have found it to work. The first function dfa\_initial is simple because there are no epsilon transitions here. Therefore, we can simply set the initial state of the NFA to the initial state of the DFA. If there were epsilon transitions, we would also have to account for any possible states that connect to the initial state with an epsilon transition. For the dfa\_final function, we just need to find all states that contain one of the final states from the NFA. This is done using the disjunction and map functions to find if the list of states contains an accepting state. Finally, for the dfa\_delta function, we need to recursively loop through the states that result from an input given the starting state. Both the input and output are a list of states, so we must use the concat function to keep the list as a list of states and not a list of lists.
 
 \section{Project}
 
-The project will be to compile code from a programming language of your choice to assembly and to explain the assembly code and compilation process using the knowledge your learned in this course. 
-
-
-\medskip\noindent
-Pro tips:
-\begin{itemize}
-\item Choose a compiled (not interpreted) programming language.
-\item Choose a language that you find interesting anyway.
-\item Start early.
-\item Come to office hours. I have not run this part of the course before and I am really interested what you will find.
-\end{itemize}
- 
 \section{Conclusions}\label{conclusions}
-
-(approx 400 words)
-
-In the conclusion, I want a critical reflection on the content of the course. Step back from the technical details. How does the course fit into the wider world of programming languages and software engineering?
 
 \begin{thebibliography}{99}
 \bibitem[HMU]{Hopcroft}
