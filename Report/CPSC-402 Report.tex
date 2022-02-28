@@ -111,7 +111,7 @@ Regular Expression: $\Sigma^*1\Sigma^9+\Sigma^*1\Sigma^8...+\Sigma^*1$ : remove 
 
 \includegraphics[scale=0.2]{Images/Week3.png}
 
-\includegraphics[scale=0.4]{Images/2.3.1.png}
+\includegraphics[scale=0.4]{Images/2.3.1.png} : change it so that pqrs -> prs on 1
 
 \includegraphics[scale=0.2]{Images/Week3a.png}
 
@@ -133,6 +133,16 @@ nfa2dfa nfa = DFA {
 \end{lstlisting}
 
 The code above is my modifications to the automata05.hs code that converts a non epsilon NFA to a DFA. I have run it with several example strings and have found it to work. The first function dfa\_initial is simple because there are no epsilon transitions here. Therefore, we can simply set the initial state of the NFA to the initial state of the DFA. If there were epsilon transitions, we would also have to account for any possible states that connect to the initial state with an epsilon transition. For the dfa\_final function, we just need to find all states that contain one of the final states from the NFA. This is done using the disjunction and map functions to find if the list of states contains an accepting state. Finally, for the dfa\_delta function, we need to recursively loop through the states that result from an input given the starting state. Both the input and output are a list of states, so we must use the concat function to keep the list as a list of states and not a list of lists.
+
+\subsection{Week 4}
+
+Concrete syntax tree for Fibonacci function:
+
+\includegraphics[scale=0.2]{Images/FibParseTree.png}
+
+Abstract syntax tree:
+
+\includegraphics[scale=0.3]{Images/FibAbstractTree.png}
 
 \section{Project}
 
