@@ -28,7 +28,7 @@ EId.     Exp15  ::= Id ;
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
-ECons.   Exp15  ::= Id "::" [Id] ;
+ECons.   Exp15  ::= Id "::" [Id] ; --Qualified constants are constant names separated by ::, used to denote types associated with their operation such as std::cout
 
 EPIncr.  Exp14  ::= Exp15 "++" ;
 EPDecr.  Exp14  ::= Exp15 "--" ;
@@ -40,8 +40,8 @@ ETimes.  Exp12  ::= Exp12 "*"  Exp13 ;
 EDiv.    Exp12  ::= Exp12 "/"  Exp13 ;
 EPlus.   Exp11  ::= Exp11 "+"  Exp12 ;
 EMinus.  Exp11  ::= Exp11 "-"  Exp12 ;
-ELShift. Exp10  ::= Exp10 "<<" Exp11 ;
-ERShift. Exp10  ::= Exp10 ">>" Exp11 ;
+ELShift. Exp10  ::= Exp10 "<<" Exp11 ; --The left shift operation, mostly used for outputting to a console or file
+ERShift. Exp10  ::= Exp10 ">>" Exp11 ; --The right shift operation, mostly used for taking input from the user or a file and storing in a variable
 ELt.     Exp9   ::= Exp9  "<"  Exp10 ;
 EGt.     Exp9   ::= Exp9  ">"  Exp10 ;
 ELtEq.   Exp9   ::= Exp9  "<=" Exp10 ;
