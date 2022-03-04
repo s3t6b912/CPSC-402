@@ -25,10 +25,11 @@ EInt.    Exp15  ::= Integer ;
 EDouble. Exp15  ::= Double ;
 EString. Exp15  ::= String ;
 EId.     Exp15  ::= Id ;
+ETId.    Exp15  ::= Id "::" Type [Id] ; --Added to make use of the qualified constant std::string
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
-ECons.   Exp15  ::= Id "::" [Id] ; --Qualified constants are constant names separated by ::, used to denote types associated with their operation such as std::cout
+ECons.   Exp15  ::= Id "::" Exp15 ; --Qualified constants are constant names separated by ::, used to denote types associated with their operation such as std::cout
 
 EPIncr.  Exp14  ::= Exp15 "++" ;
 EPDecr.  Exp14  ::= Exp15 "--" ;
