@@ -1,6 +1,9 @@
 PDefs.   Program ::= [Def] ;
 
 DFun.    Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+--DUsingI. Def    ::= "using" Id "::" Id ";" ; --using directives: license to use an unqualified name from a name space.
+--DUsingT. Def    ::= "using" Id "::" "string" ";" ; --using directives: license to use an unqualified name from a name space. (Specifically for std::string)
+DUsing. Def    ::= "using" QC1 ";" ;
 
 terminator Def "" ;
 
@@ -16,6 +19,8 @@ SReturnVoid. Stm ::= "return" ";" ;
 SWhile.      Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.      Stm ::= "{" [Stm] "}" ;
 SIfElse.     Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
+STempDec.    Stm ::= Tmp [Id] ";" ; --Template instantiation for a declaration
+STempInit.   Stm ::= Tmp Id "=" Exp ";" ; --Template instantiation for assigning a value
 
 terminator Stm "" ;
 
@@ -24,12 +29,21 @@ EFalse.  Exp15  ::= "false" ;
 EInt.    Exp15  ::= Integer ;
 EDouble. Exp15  ::= Double ;
 EString. Exp15  ::= String ;
+EStrLst. Exp15  ::= [String] ; --List of strings, mainly for when cout << multiple lines of strings
 EId.     Exp15  ::= Id ;
-ETId.    Exp15  ::= Id "::" Type [Id] ; --Added to make use of the qualified constant std::string
+ETemp.   Exp15  ::= Tmp ; --Same function as expression above, just with templates
+--ETId.    Exp15  ::= Id "::" Type [Id] ; --Added to make use of the qualified constant std::string
+EQC.     Exp15  ::= QC1 ;
+EQCId.   Exp15  ::= QC1 Id ;
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
-ECons.   Exp15  ::= Id "::" Exp15 ; --Qualified constants are constant names separated by ::, used to denote types associated with their operation such as std::cout
+--EConsId. Exp15  ::= Id "::" Exp15 ; --Qualified constants are constant names separated by ::, used to denote types associated with their operation such as std::cout
+--EConsT.  Exp15  ::= Tmp "::" Exp15 ; --Same as above but allows syntax such as vector<double>::size_type
+
+ETypDef. Exp15 ::= "typedef" Exp15 Id ;
+
+ECall.   Exp14  ::= Id "." Id "(" [Exp] ")" ; --Calling a function on a specific variable
 
 EPIncr.  Exp14  ::= Exp15 "++" ;
 EPDecr.  Exp14  ::= Exp15 "--" ;
@@ -53,6 +67,15 @@ EAnd.    Exp4   ::= Exp4  "&&" Exp5 ;
 EOr.     Exp3   ::= Exp3  "||" Exp4 ;
 EAss.    Exp2   ::= Exp3 "=" Exp2 ;
 
+Template. Tmp   ::= Id "<" Type ">" ; --Creation of templates such as vector<int>
+
+QId.     QC1   ::= Id "::" QC ;
+QTemp.   QC1   ::= Tmp "::" QC ;
+QCo.     QC    ::= QC1 "::" QC ;
+QString. QC    ::= "string" ;
+QCId.    QC    ::= Id ;
+QCTemp.  QC    ::= Tmp ;
+
 internal ETyped. Exp15 ::= "(" Exp ":" Type ")" ;
 
 coercions Exp 15 ;
@@ -64,6 +87,7 @@ rules Type   ::= "bool" | "int" | "double" | "void" | "string" ;
 token Id (letter (letter | digit | '_')*) ;
 
 separator nonempty Id "," ;
+separator nonempty String "" ; --String lists don't have to have separators
 
 comment "#" ;
 comment "//" ;
