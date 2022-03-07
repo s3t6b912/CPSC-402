@@ -5,7 +5,13 @@ DUsing.  Def    ::= "using" QC1 ";" ;
 
 terminator Def "" ;
 
-ADecl.   Arg    ::= Type Id ;
+AConst.  Arg    ::= "const" Arg1 ;
+ACo.     Arg    ::= Arg1 ;
+ADecl.   Arg1   ::= Type Id ;
+ATmp.    Arg1   ::= Tmp Id ;
+ADeclR.  Arg1   ::= Type "&" Id ;
+ATmpR.   Arg1   ::= Tmp "&" Id ;
+AInitR.  Arg1   ::= Id "&" Id ;
 
 separator Arg "," ;
 
@@ -22,7 +28,7 @@ SQCDec.      Stm ::= QC1 [Id] ";" ; --Qualified constant for a declaration
 SQCInit.     Stm ::= QC1 Id "=" Exp ";" ; --Qualified constant for assigning a value
 STempDec.    Stm ::= Tmp [Id] ";" ; --Template instantiation for a declaration
 STempInit.   Stm ::= Tmp Id "=" Exp ";" ; --Template instantiation for assigning a value
-SIdDecls.    Stm ::= Id [Id] ";" ;
+--SIdDecls.    Stm ::= Id [Id] ";" ;
 SIdInit.     Stm ::= Id Id "=" Exp ";" ;
 
 terminator Stm "" ;
@@ -50,9 +56,11 @@ EId.     Exp15  ::= Id ;
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
-ETypDef. Exp15  ::= "typedef" Exp15 Id ;
+ETypDef. Exp15  ::= "typedef" QC1 Id ;
 
-ECall.   Exp14  ::= Id "." Id "(" [Exp] ")" ; --Calling a function on a specific variable
+ECall.   Exp15  ::= Id "." Id "(" [Exp] ")" ; --Calling a function on a specific variable
+
+EProj.   Exp15  ::= Id "." Id ;
 
 EPIncr.  Exp14  ::= Exp15 "++" ;
 EPDecr.  Exp14  ::= Exp15 "--" ;
@@ -78,6 +86,7 @@ EOr.     Exp3   ::= Exp3  "||" Exp4 ;
 EAss.    Exp2   ::= Exp3  "=" Exp2 ;
 EConQ.   Exp2   ::= Exp3  "?" Exp2 ;
 EConC.   Exp2   ::= Exp3  ":" Exp2 ;
+EThrow.  Exp1   ::= "throw" Exp2 ;
 
 internal ETyped. Exp15 ::= "(" Exp ":" Type ")" ;
 
