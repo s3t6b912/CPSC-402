@@ -1,9 +1,7 @@
 PDefs.   Program ::= [Def] ;
 
 DFun.    Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
---DUsingI. Def    ::= "using" Id "::" Id ";" ; --using directives: license to use an unqualified name from a name space.
---DUsingT. Def    ::= "using" Id "::" "string" ";" ; --using directives: license to use an unqualified name from a name space. (Specifically for std::string)
-DUsing. Def    ::= "using" QC1 ";" ;
+DUsing.  Def    ::= "using" QC1 ";" ;
 
 terminator Def "" ;
 
@@ -19,10 +17,26 @@ SReturnVoid. Stm ::= "return" ";" ;
 SWhile.      Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.      Stm ::= "{" [Stm] "}" ;
 SIfElse.     Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
+SIf.         Stm ::= "if" "(" Exp ")" Stm ;
+SQCDec.      Stm ::= QC1 [Id] ";" ; --Qualified constant for a declaration
+SQCInit.     Stm ::= QC1 Id "=" Exp ";" ; --Qualified constant for assigning a value
 STempDec.    Stm ::= Tmp [Id] ";" ; --Template instantiation for a declaration
 STempInit.   Stm ::= Tmp Id "=" Exp ";" ; --Template instantiation for assigning a value
+SIdDecls.    Stm ::= Id [Id] ";" ;
+SIdInit.     Stm ::= Id Id "=" Exp ";" ;
 
 terminator Stm "" ;
+
+QTemp.   QC1   ::= Tmp "::" QC ;
+QId.     QC1   ::= Id "::" QC ;
+QCo.     QC    ::= QC1 ;
+QString. QC    ::= "string" ;
+QCTemp.  QC    ::= Tmp ;
+QCId.    QC    ::= Id ;
+
+Template. Tmp   ::= Id "<" Type ">" ; --Creation of templates such as vector<int>
+
+EIndex.  Exp15  ::= Id "[" Exp11 "]" ;
 
 ETrue.   Exp15  ::= "true" ;
 EFalse.  Exp15  ::= "false" ;
@@ -30,18 +44,13 @@ EInt.    Exp15  ::= Integer ;
 EDouble. Exp15  ::= Double ;
 EString. Exp15  ::= String ;
 EStrLst. Exp15  ::= [String] ; --List of strings, mainly for when cout << multiple lines of strings
-EId.     Exp15  ::= Id ;
-ETemp.   Exp15  ::= Tmp ; --Same function as expression above, just with templates
---ETId.    Exp15  ::= Id "::" Type [Id] ; --Added to make use of the qualified constant std::string
 EQC.     Exp15  ::= QC1 ;
-EQCId.   Exp15  ::= QC1 Id ;
+ETemp.   Exp15  ::= Tmp ; --Same function as expression above, just with templates
+EId.     Exp15  ::= Id ;
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
---EConsId. Exp15  ::= Id "::" Exp15 ; --Qualified constants are constant names separated by ::, used to denote types associated with their operation such as std::cout
---EConsT.  Exp15  ::= Tmp "::" Exp15 ; --Same as above but allows syntax such as vector<double>::size_type
-
-ETypDef. Exp15 ::= "typedef" Exp15 Id ;
+ETypDef. Exp15  ::= "typedef" Exp15 Id ;
 
 ECall.   Exp14  ::= Id "." Id "(" [Exp] ")" ; --Calling a function on a specific variable
 
@@ -53,6 +62,7 @@ EDecr.   Exp13  ::= "--" Exp14 ;
 
 ETimes.  Exp12  ::= Exp12 "*"  Exp13 ;
 EDiv.    Exp12  ::= Exp12 "/"  Exp13 ;
+EMod.    Exp12  ::= Exp12 "%"  Exp13 ;
 EPlus.   Exp11  ::= Exp11 "+"  Exp12 ;
 EMinus.  Exp11  ::= Exp11 "-"  Exp12 ;
 ELShift. Exp10  ::= Exp10 "<<" Exp11 ; --The left shift operation, mostly used for outputting to a console or file
@@ -65,16 +75,9 @@ EEq.     Exp8   ::= Exp8  "==" Exp9 ;
 ENEq.    Exp8   ::= Exp8  "!=" Exp9 ;
 EAnd.    Exp4   ::= Exp4  "&&" Exp5 ;
 EOr.     Exp3   ::= Exp3  "||" Exp4 ;
-EAss.    Exp2   ::= Exp3 "=" Exp2 ;
-
-Template. Tmp   ::= Id "<" Type ">" ; --Creation of templates such as vector<int>
-
-QId.     QC1   ::= Id "::" QC ;
-QTemp.   QC1   ::= Tmp "::" QC ;
-QCo.     QC    ::= QC1 "::" QC ;
-QString. QC    ::= "string" ;
-QCId.    QC    ::= Id ;
-QCTemp.  QC    ::= Tmp ;
+EAss.    Exp2   ::= Exp3  "=" Exp2 ;
+EConQ.   Exp2   ::= Exp3  "?" Exp2 ;
+EConC.   Exp2   ::= Exp3  ":" Exp2 ;
 
 internal ETyped. Exp15 ::= "(" Exp ":" Type ")" ;
 
