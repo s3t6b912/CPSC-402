@@ -1,17 +1,17 @@
 PDefs.   Program ::= [Def] ;
 
 DFun.    Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
-DUsing.  Def    ::= "using" QC1 ";" ;
+DUsing.  Def    ::= "using" QC1 ";" ; --using directives: license to use an unqualified name from a name space.
 
 terminator Def "" ;
 
-AConst.  Arg    ::= "const" Arg1 ;
-ACo.     Arg    ::= Arg1 ;
+AConst.  Arg    ::= "const" Arg1 ; --the const modifier allows for variables and references to be unmodifiable
+ACo.     Arg    ::= Arg1 ; --Arg coercions
 ADecl.   Arg1   ::= Type Id ;
-ATmp.    Arg1   ::= Tmp Id ;
-ADeclR.  Arg1   ::= Type "&" Id ;
-ATmpR.   Arg1   ::= Tmp "&" Id ;
-AInitR.  Arg1   ::= Id "&" Id ;
+ATmp.    Arg1   ::= Tmp Id ; --Template argument
+ADeclR.  Arg1   ::= Type "&" Id ; --Reference argument
+ATmpR.   Arg1   ::= Tmp "&" Id ; --Reference template argument
+AInitR.  Arg1   ::= Id "&" Id ; --Reference object argument
 
 separator Arg "," ;
 
@@ -23,44 +23,44 @@ SReturnVoid. Stm ::= "return" ";" ;
 SWhile.      Stm ::= "while" "(" Exp ")" Stm ;
 SBlock.      Stm ::= "{" [Stm] "}" ;
 SIfElse.     Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
-SIf.         Stm ::= "if" "(" Exp ")" Stm ;
+SIf.         Stm ::= "if" "(" Exp ")" Stm ; --if statement that doesn't use an else statement
 SQCDec.      Stm ::= QC1 [Id] ";" ; --Qualified constant for a declaration
 SQCInit.     Stm ::= QC1 Id "=" Exp ";" ; --Qualified constant for assigning a value
 STempDec.    Stm ::= Tmp [Id] ";" ; --Template instantiation for a declaration
 STempInit.   Stm ::= Tmp Id "=" Exp ";" ; --Template instantiation for assigning a value
---SIdDecls.    Stm ::= Id [Id] ";" ;
-SIdInit.     Stm ::= Id Id "=" Exp ";" ;
+SIdInit.     Stm ::= Id Id "=" Exp ";" ; --declaration of a variable of an object type
+STypeDef.    Stm ::= "typedef" QC1 Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
 
 terminator Stm "" ;
 
+--The block below is for Qualified constants, which are constant names separated by ::
 QTemp.   QC1   ::= Tmp "::" QC ;
 QId.     QC1   ::= Id "::" QC ;
-QCo.     QC    ::= QC1 ;
+QCo.     QC    ::= QC1 ;  --QC coercions
 QString. QC    ::= "string" ;
 QCTemp.  QC    ::= Tmp ;
 QCId.    QC    ::= Id ;
 
 Template. Tmp   ::= Id "<" Type ">" ; --Creation of templates such as vector<int>
 
-EIndex.  Exp15  ::= Id "[" Exp11 "]" ;
+EStrLit. Exp16  ::= String [String] ; --String literal: A string literal may consist of many can be concatenated strings and in this way divided over lines
+
+EIndex.  Exp15  ::= Id "[" Exp11 "]" ; --Indexing
 
 ETrue.   Exp15  ::= "true" ;
 EFalse.  Exp15  ::= "false" ;
 EInt.    Exp15  ::= Integer ;
 EDouble. Exp15  ::= Double ;
 EString. Exp15  ::= String ;
-EStrLst. Exp15  ::= [String] ; --List of strings, mainly for when cout << multiple lines of strings
-EQC.     Exp15  ::= QC1 ;
+EQC.     Exp15  ::= QC1 ; --This is so qualified constants can be used in an expression
 ETemp.   Exp15  ::= Tmp ; --Same function as expression above, just with templates
 EId.     Exp15  ::= Id ;
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
-ETypDef. Exp15  ::= "typedef" QC1 Id ;
-
 ECall.   Exp15  ::= Id "." Id "(" [Exp] ")" ; --Calling a function on a specific variable
 
-EProj.   Exp15  ::= Id "." Id ;
+EProj.   Exp15  ::= Id "." Id ; --structure projection, used for calling members variables from objects
 
 EPIncr.  Exp14  ::= Exp15 "++" ;
 EPDecr.  Exp14  ::= Exp15 "--" ;
@@ -70,7 +70,7 @@ EDecr.   Exp13  ::= "--" Exp14 ;
 
 ETimes.  Exp12  ::= Exp12 "*"  Exp13 ;
 EDiv.    Exp12  ::= Exp12 "/"  Exp13 ;
-EMod.    Exp12  ::= Exp12 "%"  Exp13 ;
+EMod.    Exp12  ::= Exp12 "%"  Exp13 ; --Remainder/modulo operator, used for modular arithmetic
 EPlus.   Exp11  ::= Exp11 "+"  Exp12 ;
 EMinus.  Exp11  ::= Exp11 "-"  Exp12 ;
 ELShift. Exp10  ::= Exp10 "<<" Exp11 ; --The left shift operation, mostly used for outputting to a console or file
@@ -86,11 +86,11 @@ EOr.     Exp3   ::= Exp3  "||" Exp4 ;
 EAss.    Exp2   ::= Exp3  "=" Exp2 ;
 EConQ.   Exp2   ::= Exp3  "?" Exp2 ;
 EConC.   Exp2   ::= Exp3  ":" Exp2 ;
-EThrow.  Exp1   ::= "throw" Exp2 ;
+EThrow.  Exp1   ::= "throw" Exp2 ; --throw exception, will give a message if a runtime error is encountered
 
 internal ETyped. Exp15 ::= "(" Exp ":" Type ")" ;
 
-coercions Exp 15 ;
+coercions Exp 16 ;
 
 separator Exp "," ;
 
@@ -99,7 +99,7 @@ rules Type   ::= "bool" | "int" | "double" | "void" | "string" ;
 token Id (letter (letter | digit | '_')*) ;
 
 separator nonempty Id "," ;
-separator nonempty String "" ; --String lists don't have to have separators
+separator nonempty String "" ; --String literals don't have to have separators
 
 comment "#" ;
 comment "//" ;
