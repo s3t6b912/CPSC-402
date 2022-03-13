@@ -1,49 +1,67 @@
 PDefs.   Program ::= [Def] ;
 
-DFun.    Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
-DUsing.  Def    ::= "using" QC1 ";" ; --using directives: license to use an unqualified name from a name space.
+DInFun.     Def    ::= "inline" Type Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for inline function declaration, reducing the compiler overhead for using that function
+DFun.       Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
+DObjInFun.  Def    ::= "inline" Id Id "(" [Arg] ")" "{" [Stm] "}" ;
+DObjFun.    Def    ::= Name Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for functions to return abstract types or objects
+DUsing.     Def    ::= "using" Name ";" ; --using directives: license to use an unqualified name from a name space.
+DType.      Def    ::= "typedef" Name Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+DFunDecO.   Def    ::= Name Id "(" [Arg] ")" ";" ; --allows for functions to be initiated and defined later
+DFunDecI.   Def    ::= Type Id "(" [Arg] ")" ";" ; --allows for functions to be initiated and defined later
+DConstO.    Def    ::= "const" Name Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed
+DConstT.    Def    ::= "const" Type Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed
+DConstO.    Def    ::= "const" Name "&" Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed, Reference
+DConstT.    Def    ::= "const" Type "&"Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed, Reference
+DInit.      Def    ::= Type Id "=" Exp ";" ;
+DNInit.     Def    ::= Name Id "=" Exp ";" ; --Assigning a value using the Name type
 
 terminator Def "" ;
 
 AConst.  Arg    ::= "const" Arg1 ; --the const modifier allows for variables and references to be unmodifiable
 ACo.     Arg    ::= Arg1 ; --Arg coercions
 ADecl.   Arg1   ::= Type Id ;
-ATmp.    Arg1   ::= Tmp Id ; --Template argument
+AObj.    Arg1   ::= Name Id ; --Template argument
 ADeclR.  Arg1   ::= Type "&" Id ; --Reference argument
-ATmpR.   Arg1   ::= Tmp "&" Id ; --Reference template argument
-AInitR.  Arg1   ::= Id "&" Id ; --Reference object argument
+AObjR.   Arg1   ::= Name "&" Id ; --Reference Name argument
+ADeclI.  Arg1   ::= Type ; --init
+AObjI.   Arg1   ::= Name ; --Name init
+ADeclRI. Arg1   ::= Type "&" ; --Reference init
+AObjRI.  Arg1   ::= Name "&" ; --Reference Name init
 
 separator Arg "," ;
 
 SExp.        Stm ::= Exp ";" ;
+SConstO.     Stm ::= "const" Name Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed
+SConstT.     Stm ::= "const" Type Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed
+SConstO.     Stm ::= "const" Name "&" Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed, Reference
+SConstT.     Stm ::= "const" Type "&"Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed, Reference
 SDecls.      Stm ::= Type [Id] ";" ;
 SInit.       Stm ::= Type Id "=" Exp ";" ;
 SReturn.     Stm ::= "return" Exp ";" ;
 SReturnVoid. Stm ::= "return" ";" ;
 SWhile.      Stm ::= "while" "(" Exp ")" Stm ;
+SDoWhile.    Stm ::= "do" Stm "while" "(" Exp ")" ";" ; --Do while loop, same as a while loop but will allows loop at least once
+SForN.       Stm ::= "for" "(" Name Id "=" Exp ";" Exp ";" Exp ")" Stm ; --For loop, will declare a variable and then loop through the statement while applying the first expression until the second expression is no longer true
+SForT.       Stm ::= "for" "(" Type Id "=" Exp ";" Exp ";" Exp ")" Stm ; --For loop, will declare a variable and then loop through the statement while applying the first expression until the second expression is no longer true
 SBlock.      Stm ::= "{" [Stm] "}" ;
 SIfElse.     Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
 SIf.         Stm ::= "if" "(" Exp ")" Stm ; --if statement that doesn't use an else statement
-SQCDec.      Stm ::= QC1 [Id] ";" ; --Qualified constant for a declaration
-SQCInit.     Stm ::= QC1 Id "=" Exp ";" ; --Qualified constant for assigning a value
-STempDec.    Stm ::= Tmp [Id] ";" ; --Template instantiation for a declaration
-STempInit.   Stm ::= Tmp Id "=" Exp ";" ; --Template instantiation for assigning a value
-SIdInit.     Stm ::= Id Id "=" Exp ";" ; --declaration of a variable of an object type
-STypeDef.    Stm ::= "typedef" QC1 Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+SNDec.       Stm ::= Name [Id] ";" ; --Declaration using the Name type
+SNInit.      Stm ::= Name Id "=" Exp ";" ; --Assigning a value using the Name type
+STypeDef.    Stm ::= "typedef" Name Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
 
 terminator Stm "" ;
 
---The block below is for Qualified constants, which are constant names separated by ::
-QTemp.   QC1   ::= Tmp "::" QC ;
-QId.     QC1   ::= Id "::" QC ;
-QCo.     QC    ::= QC1 ;  --QC coercions
-QString. QC    ::= "string" ;
-QCTemp.  QC    ::= Tmp ;
-QCId.    QC    ::= Id ;
+--The Name type, used as an abstraction and grouping of Id, templates, and qualified constants
+NQC.   Name  ::= Name "::" Name ; --Qualified constants, which are constant names separated by ::
+NTmp.  Name  ::= Tmp ;
+NId.   Name  ::= Id ;
 
-Template. Tmp   ::= Id "<" Type ">" ; --Creation of templates such as vector<int>
 
-EStrLit. Exp16  ::= String [String] ; --String literal: A string literal may consist of many can be concatenated strings and in this way divided over lines
+Template. Tmp   ::= Id "<" [Type] ">" ; --Creation of templates such as vector<int>
+TempId.   Tmp   ::= Id "<" [Id] ">" ;
+
+EStrLit. Exp16  ::= [String] ; --String literal: A string literal may consist of many can be concatenated strings and in this way divided over lines
 
 EIndex.  Exp15  ::= Id "[" Exp11 "]" ; --Indexing
 
@@ -51,22 +69,21 @@ ETrue.   Exp15  ::= "true" ;
 EFalse.  Exp15  ::= "false" ;
 EInt.    Exp15  ::= Integer ;
 EDouble. Exp15  ::= Double ;
-EString. Exp15  ::= String ;
-EQC.     Exp15  ::= QC1 ; --This is so qualified constants can be used in an expression
-ETemp.   Exp15  ::= Tmp ; --Same function as expression above, just with templates
-EId.     Exp15  ::= Id ;
+EChar.   Exp15  ::= Char ; --Allows usage of single characters denoted by ''
+EQC.     Exp15  ::= Name ; --This is so "Names" can be used in an expression
 
 EApp.    Exp15  ::= Id "(" [Exp] ")" ;
 
-ECall.   Exp15  ::= Id "." Id "(" [Exp] ")" ; --Calling a function on a specific variable
-
-EProj.   Exp15  ::= Id "." Id ; --structure projection, used for calling members variables from objects
+EProj.   Exp14  ::= Exp14 "." Exp15 ; --structure projection, used for calling members variables from objects
+EPoint.  Exp14  ::= Exp14 "->" Exp15 ; --structure projection, used for calling members variables from objects
+EDeRef.  Exp14  ::= "*" Id ; --Dereferencing, used to point to a location in memory where the variable is stored
 
 EPIncr.  Exp14  ::= Exp15 "++" ;
 EPDecr.  Exp14  ::= Exp15 "--" ;
 
 EIncr.   Exp13  ::= "++" Exp14 ;
 EDecr.   Exp13  ::= "--" Exp14 ;
+ENeg.    Exp13  ::= "!" Exp14 ; --allows for negation of expressions, typically used for boolean expressions
 
 ETimes.  Exp12  ::= Exp12 "*"  Exp13 ;
 EDiv.    Exp12  ::= Exp12 "/"  Exp13 ;
@@ -94,11 +111,12 @@ coercions Exp 16 ;
 
 separator Exp "," ;
 
-rules Type   ::= "bool" | "int" | "double" | "void" | "string" ;
+rules Type   ::= "bool" | "int" | "double" | "void" | "char" ;
 
 token Id (letter (letter | digit | '_')*) ;
 
 separator nonempty Id "," ;
+separator nonempty Type "," ;
 separator nonempty String "" ; --String literals don't have to have separators
 
 comment "#" ;
