@@ -1,19 +1,27 @@
 PDefs.   Program ::= [Def] ;
 
 DInFun.     Def    ::= "inline" Type Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for inline function declaration, reducing the compiler overhead for using that function
+DObjInFun.  Def    ::= "inline" Name Id "(" [Arg] ")" "{" [Stm] "}" ;
+DInFunIn.   Def    ::= "inline" Type Id "(" [Arg] ")" ";" ;
+DObjFunIn.  Def    ::= "inline" Name Id "(" [Arg] ")" ";" ;
 DFun.       Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
-DObjInFun.  Def    ::= "inline" Id Id "(" [Arg] ")" "{" [Stm] "}" ;
 DObjFun.    Def    ::= Name Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for functions to return abstract types or objects
 DUsing.     Def    ::= "using" Name ";" ; --using directives: license to use an unqualified name from a name space.
-DType.      Def    ::= "typedef" Name Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+DTypeN.     Def    ::= "typedef" Name Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+DTypeT.     Def    ::= "typedef" Type Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
 DFunDecO.   Def    ::= Name Id "(" [Arg] ")" ";" ; --allows for functions to be initiated and defined later
 DFunDecI.   Def    ::= Type Id "(" [Arg] ")" ";" ; --allows for functions to be initiated and defined later
 DConstO.    Def    ::= "const" Name Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed
 DConstT.    Def    ::= "const" Type Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed
 DConstO.    Def    ::= "const" Name "&" Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed, Reference
 DConstT.    Def    ::= "const" Type "&"Id "=" Exp ";" ; --allows for declaration of constant variables which can't be changed, Reference
-DInit.      Def    ::= Type Id "=" Exp ";" ;
-DNInit.     Def    ::= Name Id "=" Exp ";" ; --Assigning a value using the Name type
+DInit.      Def    ::= Type [Id] ";" ; --Defining a value using the primitive types
+DNInit.     Def    ::= Name [Id] ";" ; --Defining a value using the Name type
+DInitD.     Def    ::= Type Id "=" Exp ";" ; --Assigning a value using the primitive types
+DNInitD.    Def    ::= Name Id "=" Exp ";" ; --Assigning a value using the Name type
+DInitDR.    Def    ::= Type "&" Id "=" Exp ";" ; --Assigning a value using the primitive types, Reference
+DNInitDR.   Def    ::= Name "&" Id "=" Exp ";" ; --Assigning a value using the Name type, Reference
+DStruct.    Def    ::= "struct" Id "{" [Dec] "}" ";" ; --Structure declaration, a name and a list of declarations. Very similar to classes
 
 terminator Def "" ;
 
@@ -23,6 +31,10 @@ ADecl.   Arg1   ::= Type Id ;
 AObj.    Arg1   ::= Name Id ; --Template argument
 ADeclR.  Arg1   ::= Type "&" Id ; --Reference argument
 AObjR.   Arg1   ::= Name "&" Id ; --Reference Name argument
+ADeclD.  Arg1   ::= Type Id "=" Exp; --Type argument definition
+AObjD.   Arg1   ::= Name Id "=" Exp ; --Template argument definition
+ADeclRD. Arg1   ::= Type "&" Id "=" Exp ; --Reference argument definition
+AObjRD.  Arg1   ::= Name "&" Id "=" Exp ; --Reference Name argument definition
 ADeclI.  Arg1   ::= Type ; --init
 AObjI.   Arg1   ::= Name ; --Name init
 ADeclRI. Arg1   ::= Type "&" ; --Reference init
@@ -43,23 +55,34 @@ SWhile.      Stm ::= "while" "(" Exp ")" Stm ;
 SDoWhile.    Stm ::= "do" Stm "while" "(" Exp ")" ";" ; --Do while loop, same as a while loop but will allows loop at least once
 SForN.       Stm ::= "for" "(" Name Id "=" Exp ";" Exp ";" Exp ")" Stm ; --For loop, will declare a variable and then loop through the statement while applying the first expression until the second expression is no longer true
 SForT.       Stm ::= "for" "(" Type Id "=" Exp ";" Exp ";" Exp ")" Stm ; --For loop, will declare a variable and then loop through the statement while applying the first expression until the second expression is no longer true
+SForNI.      Stm ::= "for" "(" Name Id ";" Exp ";" Exp ")" Stm ; --For loop, will declare a variable and then loop through the statement while applying the first expression until the second expression is no longer true
+SForTI.      Stm ::= "for" "(" Type Id ";" Exp ";" Exp ")" Stm ; --For loop, will declare a variable and then loop through the statement while applying the first expression until the second expression is no longer true
 SBlock.      Stm ::= "{" [Stm] "}" ;
 SIfElse.     Stm ::= "if" "(" Exp ")" Stm "else" Stm ;
 SIf.         Stm ::= "if" "(" Exp ")" Stm ; --if statement that doesn't use an else statement
 SNDec.       Stm ::= Name [Id] ";" ; --Declaration using the Name type
 SNInit.      Stm ::= Name Id "=" Exp ";" ; --Assigning a value using the Name type
-STypeDef.    Stm ::= "typedef" Name Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+STypeDefN.   Stm ::= "typedef" Name Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+STypeDefT.   Stm ::= "typedef" Type Id ";" ; --Type definitions: a type and a name for it, allows for declaration of abstract types
+SStruct.     Stm ::= "struct" Id "{" [Dec] "}" ";" ; --Structure declaration, a name and a list of declarations. Very similar to classes
 
 terminator Stm "" ;
+
+--This type is used simply for structure declarations
+DecName.     Dec ::= Name Id ";" ;
+DecType.     Dec ::= Type Id ";" ;
+
+separator Dec "" ; --Makes the Dec type able to be put into a list
 
 --The Name type, used as an abstraction and grouping of Id, templates, and qualified constants
 NQC.   Name  ::= Name "::" Name ; --Qualified constants, which are constant names separated by ::
 NTmp.  Name  ::= Tmp ;
 NId.   Name  ::= Id ;
 
+separator nonempty Name "," ; --Makes the Name type able to be put into a list
 
 Template. Tmp   ::= Id "<" [Type] ">" ; --Creation of templates such as vector<int>
-TempId.   Tmp   ::= Id "<" [Id] ">" ;
+TempId.   Tmp   ::= Id "<" [Name] ">" ; --Creation of templates such as vector<int>
 
 EStrLit. Exp16  ::= [String] ; --String literal: A string literal may consist of many can be concatenated strings and in this way divided over lines
 
@@ -101,6 +124,8 @@ ENEq.    Exp8   ::= Exp8  "!=" Exp9 ;
 EAnd.    Exp4   ::= Exp4  "&&" Exp5 ;
 EOr.     Exp3   ::= Exp3  "||" Exp4 ;
 EAss.    Exp2   ::= Exp3  "=" Exp2 ;
+EAssP.   Exp2   ::= Exp3  "+=" Exp2 ; --plus-equals, will add the right expression to the left
+EAssM.   Exp2   ::= Exp3  "-=" Exp2 ; --minus-equals, will subtract the right expression from the left
 EConQ.   Exp2   ::= Exp3  "?" Exp2 ;
 EConC.   Exp2   ::= Exp3  ":" Exp2 ;
 EThrow.  Exp1   ::= "throw" Exp2 ; --throw exception, will give a message if a runtime error is encountered
