@@ -1,6 +1,9 @@
 Sebastian Brumm
+
 Assignment 1
-3/18/22*
+
+3/18/22
+
 
 How to run:
 
@@ -9,6 +12,7 @@ Compile with bnfc -m -haskell Cpp.cf
 and then make
 
 and then run either the test suite or a custom script
+
 
 Notes:
 
