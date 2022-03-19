@@ -1,9 +1,9 @@
 PDefs.   Program ::= [Def] ;
 
 DInFun.     Def    ::= "inline" Type Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for inline function declaration, reducing the compiler overhead for using that function
-DObjInFun.  Def    ::= "inline" Name Id "(" [Arg] ")" "{" [Stm] "}" ;
-DInFunIn.   Def    ::= "inline" Type Id "(" [Arg] ")" ";" ;
-DObjFunIn.  Def    ::= "inline" Name Id "(" [Arg] ")" ";" ;
+DObjInFun.  Def    ::= "inline" Name Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for inline function declaration, reducing the compiler overhead for using that function
+DInFunIn.   Def    ::= "inline" Type Id "(" [Arg] ")" ";" ; --allows for inline function declaration, reducing the compiler overhead for using that function
+DObjFunIn.  Def    ::= "inline" Name Id "(" [Arg] ")" ";" ; --allows for inline function declaration, reducing the compiler overhead for using that function
 DFun.       Def    ::= Type Id "(" [Arg] ")" "{" [Stm] "}" ;
 DObjFun.    Def    ::= Name Id "(" [Arg] ")" "{" [Stm] "}" ; --allows for functions to return abstract types or objects
 DUsing.     Def    ::= "using" Name ";" ; --using directives: license to use an unqualified name from a name space.
@@ -86,7 +86,7 @@ TempId.   Tmp   ::= Id "<" [Name] ">" ; --Creation of templates such as vector<i
 
 EStrLit. Exp16  ::= [String] ; --String literal: A string literal may consist of many can be concatenated strings and in this way divided over lines
 
-EIndex.  Exp15  ::= Id "[" Exp11 "]" ; --Indexing
+EIndex.  Exp15  ::= Id "[" Exp11 "]" ; --Indexing, used to call specific positions in lists and arrays
 
 ETrue.   Exp15  ::= "true" ;
 EFalse.  Exp15  ::= "false" ;
@@ -126,22 +126,22 @@ EOr.     Exp3   ::= Exp3  "||" Exp4 ;
 EAss.    Exp2   ::= Exp3  "=" Exp2 ;
 EAssP.   Exp2   ::= Exp3  "+=" Exp2 ; --plus-equals, will add the right expression to the left
 EAssM.   Exp2   ::= Exp3  "-=" Exp2 ; --minus-equals, will subtract the right expression from the left
-EConQ.   Exp2   ::= Exp3  "?" Exp2 ;
-EConC.   Exp2   ::= Exp3  ":" Exp2 ;
+EConQ.   Exp2   ::= Exp3  "?" Exp2 ; --Conditional, in the form e ? e : e, same function as if/else statements where if the first expression is true, the second will be evaluated with the last being evaluated if it is false
+EConC.   Exp2   ::= Exp3  ":" Exp2 ; --Conditional, in the form e ? e : e, same function as if/else statements where if the first expression is true, the second will be evaluated with the last being evaluated if it is false
 EThrow.  Exp1   ::= "throw" Exp2 ; --throw exception, will give a message if a runtime error is encountered
 
 internal ETyped. Exp15 ::= "(" Exp ":" Type ")" ;
 
-coercions Exp 16 ;
+coercions Exp 16 ; --Increased coercions to 16
 
 separator Exp "," ;
 
-rules Type   ::= "bool" | "int" | "double" | "void" | "char" ;
+rules Type   ::= "bool" | "int" | "double" | "void" | "char" ; --Added char type
 
 token Id (letter (letter | digit | '_')*) ;
 
 separator nonempty Id "," ;
-separator nonempty Type "," ;
+separator nonempty Type "," ; --Allows for creation of typelists, used for templates
 separator nonempty String "" ; --String literals don't have to have separators
 
 comment "#" ;
