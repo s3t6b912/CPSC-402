@@ -1,6 +1,6 @@
-*Sebastian Brumm
-*Assignment 1
-*3/18/22
+*Sebastian Brumm*
+*Assignment 1*
+*3/18/22*
 
 *How to run:
 *Compile with bnfc -m -haskell Cpp.cf
