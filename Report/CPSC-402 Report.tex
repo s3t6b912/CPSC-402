@@ -146,6 +146,43 @@ Abstract syntax tree:
 
 \section{Project}
 
+\subsection{Introduction}
+
+\par For the project, I decided to look at how C++ compiles into assembly code using the gcc compiler. I will be using an old data structures assignment with linked lists as an example and the website \href{https://godbolt.org/}{godbolt.org} to compile into assembly. The repository for the example code can be found \href{https://github.com/s3t6b912/CPSC350-Assignment4/tree/master/src}{here}. As our first example, we can look at the  \href{https://github.com/s3t6b912/CPSC350-Assignment4/blob/master/src/ListNode.h}{ListNode.h} header file and compile it into assembly.
+
+\begin{lstlisting}
+__static_initialization_and_destruction_0(int, int):
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 16
+        mov     DWORD PTR [rbp-4], edi
+        mov     DWORD PTR [rbp-8], esi
+        cmp     DWORD PTR [rbp-4], 1
+        jne     .L3
+        cmp     DWORD PTR [rbp-8], 65535
+        jne     .L3
+        mov     edi, OFFSET FLAT:_ZStL8__ioinit
+        call    std::ios_base::Init::Init() [complete object constructor]
+        mov     edx, OFFSET FLAT:__dso_handle
+        mov     esi, OFFSET FLAT:_ZStL8__ioinit
+        mov     edi, OFFSET FLAT:_ZNSt8ios_base4InitD1Ev
+        call    __cxa_atexit
+.L3:
+        nop
+        leave
+        ret
+_GLOBAL__sub_I_example.cpp:
+        push    rbp
+        mov     rbp, rsp
+        mov     esi, 65535
+        mov     edi, 1
+        call    __static_initialization_and_destruction_0(int, int)
+        pop     rbp
+        ret
+\end{lstlisting}
+
+This is much less code than would typically be seen in a .cpp file because a header file is just meant to declare constructors and functions of a given class. This one in particular is shorter because there are no functions being implemented here. This class is just supposed to represent the nodes of a linked list and are not very complex.
+
 \section{Conclusions}\label{conclusions}
 
 \begin{thebibliography}{99}
