@@ -129,8 +129,10 @@ checkStm env (SReturn e) ty = do
     checkExp env e ty
     return env
 
--- checkStm env (SInit ty' i e) ty = do
-    -- similar to SDecls, but not need for foldM
+checkStm env (SInit ty' i e) ty = do
+    env' <- insertVar env i ty'-- similar to SDecls, but not need for foldM
+    checkExp env' e ty'
+    return env'
 
 -- checkStm env SReturnVoid Type_void =
 -- the next case is only executed in case ty is not Type_void
@@ -164,8 +166,8 @@ inferTypeExp :: Env -> Exp -> Err Type
 inferTypeExp env (EInt _) = return Type_int
 inferTypeExp env (EDouble _) = return Type_double
 inferTypeExp env (EString _) = return Type_string
--- inferTypeExp env (EId i) =
-    -- use lookupVar
+inferTypeExp env (EId i) =
+    lookupVar i env
 -- inferTypeExp env (EApp i exps) = do
     -- use lookupFun
     -- use forM_ to iterate checkExp over exps
