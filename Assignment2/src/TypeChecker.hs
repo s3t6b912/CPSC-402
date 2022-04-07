@@ -134,17 +134,19 @@ checkStm env (SInit ty' i e) ty = do
     checkExp env' e ty'
     return env'
 
--- checkStm env SReturnVoid Type_void =
+checkStm env SReturnVoid Type_void = return env
 -- the next case is only executed in case ty is not Type_void
--- checkStm env SReturnVoid ty = do
-    -- return a typeMismatchError
+--checkStm env SReturnVoid ty = do
+    --fail $ typeMismatchError (Sreturn e) Type_void ty
 
--- checkStm env (SWhile e stm) ty = do
-    -- use newBlock
+checkStm env (SWhile e stm) ty = do
+    checkExp env e Type_bool
+    foldM(\e s -> checkStm e s ty) (newBlock env) [stm]
+    return env
 
--- checkStm env (SBlock stms) ty = do
-    -- use newBlock
-    -- use foldM_ to fold checkStm over all stms
+checkStm env (SBlock stms) ty = do
+    foldM (\e s -> checkStm e s ty) (newBlock env) stms
+    return env
 
 -- checkStm env (SIfElse e stm1 stm2) ty = do
     -- use newBlock in both branches
@@ -171,25 +173,38 @@ inferTypeExp env (EId i) =
 -- inferTypeExp env (EApp i exps) = do
     -- use lookupFun
     -- use forM_ to iterate checkExp over exps
--- inferTypeExp env (EPIncr e) =
-    -- use inferTypeOverloadedExp
--- inferTypeExp env (EPDecr e) =
--- inferTypeExp env (EIncr e) =
--- inferTypeExp env (EDecr e) =
+inferTypeExp env (EPIncr e) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e []
+inferTypeExp env (EPDecr e) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e []
+inferTypeExp env (EIncr e) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e []
+inferTypeExp env (EDecr e) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e []
 inferTypeExp env (ETimes e1 e2) = do
-    ty <- inferTypeExp env e1
-    checkExp env e2 ty
-    return ty
--- inferTypeExp env (EDiv e1 e2) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e1 [e2]
+inferTypeExp env (EDiv e1 e2) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e1 [e2]
 inferTypeExp env (EPlus e1 e2) = do
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double,Type_string]) e1 [e2]
+inferTypeExp env (EMinus e1 e2) =
+    inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e1 [e2]
+inferTypeExp env (ELt e1 e2) = do
     ty <- inferTypeExp env e1
     checkExp env e2 ty
-    return ty
--- inferTypeExp env (EMinus e1 e2) =
--- inferTypeExp env (ELt e1 e2) = do
--- inferTypeExp env (EGt e1 e2) =
--- inferTypeExp env (ELtEq e1 e2) =
--- inferTypeExp env (EGtEq e1 e2) =
+    return Type_bool
+inferTypeExp env (EGt e1 e2) = do
+    ty <- inferTypeExp env e1
+    checkExp env e2 ty
+    return Type_bool
+inferTypeExp env (ELtEq e1 e2) = do
+    ty <- inferTypeExp env e1
+    checkExp env e2 ty
+    return Type_bool
+inferTypeExp env (EGtEq e1 e2) = do
+    ty <- inferTypeExp env e1
+    checkExp env e2 ty
+    return Type_bool
 -- inferTypeExp env (EEq e1 e2) = do
 -- inferTypeExp env (ENEq e1 e2) =
 -- inferTypeExp env (EAnd e1 e2) = do
