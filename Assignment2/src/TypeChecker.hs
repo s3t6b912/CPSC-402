@@ -148,8 +148,11 @@ checkStm env (SBlock stms) ty = do
     foldM (\e s -> checkStm e s ty) (newBlock env) stms
     return env
 
--- checkStm env (SIfElse e stm1 stm2) ty = do
-    -- use newBlock in both branches
+checkStm env (SIfElse e stm1 stm2) ty = do
+    checkExp env e Type_bool
+    foldM(\e s -> checkStm e s ty) (newBlock env) [stm1]
+    foldM(\e s -> checkStm e s ty) (newBlock env) [stm2]
+    return env
 
 {-
 Once you have all cases you can delete the next line which is only needed to catch all cases that are not yet implemented.
@@ -168,6 +171,8 @@ inferTypeExp :: Env -> Exp -> Err Type
 inferTypeExp env (EInt _) = return Type_int
 inferTypeExp env (EDouble _) = return Type_double
 inferTypeExp env (EString _) = return Type_string
+inferTypeExp env (ETrue) = return Type_bool
+inferTypeExp env (EFalse) = return Type_bool
 inferTypeExp env (EId i) =
     lookupVar i env
 -- inferTypeExp env (EApp i exps) = do
