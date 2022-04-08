@@ -136,8 +136,8 @@ checkStm env (SInit ty' i e) ty = do
 
 checkStm env SReturnVoid Type_void = return env
 -- the next case is only executed in case ty is not Type_void
---checkStm env SReturnVoid ty = do
-    --fail $ typeMismatchError (Sreturn e) Type_void ty
+checkStm env SReturnVoid ty = do
+    fail $ typeMismatchError (Id "return void") Type_void ty
 
 checkStm env (SWhile e stm) ty = do
     checkExp env e Type_bool
@@ -153,11 +153,6 @@ checkStm env (SIfElse e stm1 stm2) ty = do
     foldM(\e s -> checkStm e s ty) (newBlock env) [stm1]
     foldM(\e s -> checkStm e s ty) (newBlock env) [stm2]
     return env
-
-{-
-Once you have all cases you can delete the next line which is only needed to catch all cases that are not yet implemented.
--}
-checkStm _ s _ = fail $ "Missing case in checkStm encountered:\n" ++ printTree s
 
 
 {-
