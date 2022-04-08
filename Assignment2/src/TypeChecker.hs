@@ -175,9 +175,11 @@ inferTypeExp env (ETrue) = return Type_bool
 inferTypeExp env (EFalse) = return Type_bool
 inferTypeExp env (EId i) =
     lookupVar i env
--- inferTypeExp env (EApp i exps) = do
-    -- use lookupFun
-    -- use forM_ to iterate checkExp over exps
+inferTypeExp env (EApp i exps) = do
+    funcSig <- lookupFun env i
+    if (length (fst funcSig) /= (length exps)) then fail "Incorrect number of arguments"
+    else do forM_ (zip exps (fst funcSig)) (\p -> checkExp  env (fst p) (snd p))
+    return (snd funcSig)
 inferTypeExp env (EPIncr e) =
     inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e []
 inferTypeExp env (EPDecr e) =
@@ -195,25 +197,45 @@ inferTypeExp env (EPlus e1 e2) = do
 inferTypeExp env (EMinus e1 e2) =
     inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e1 [e2]
 inferTypeExp env (ELt e1 e2) = do
-    ty <- inferTypeExp env e1
-    checkExp env e2 ty
-    return Type_bool
+    if (e1 == ETrue || e1 == EFalse ||e2 == ETrue || e2 == EFalse) then fail "Cannot perform comparisons on Booleans.\n"
+    else do
+        ty <- inferTypeExp env e1
+        checkExp env e2 ty
+        return Type_bool
 inferTypeExp env (EGt e1 e2) = do
-    ty <- inferTypeExp env e1
-    checkExp env e2 ty
-    return Type_bool
+    if (e1 == ETrue || e1 == EFalse ||e2 == ETrue || e2 == EFalse) then fail "Cannot perform comparisons on Booleans.\n"
+    else do
+        ty <- inferTypeExp env e1
+        checkExp env e2 ty
+        return Type_bool
 inferTypeExp env (ELtEq e1 e2) = do
-    ty <- inferTypeExp env e1
-    checkExp env e2 ty
-    return Type_bool
+    if (e1 == ETrue || e1 == EFalse ||e2 == ETrue || e2 == EFalse) then fail "Cannot perform comparisons on Booleans.\n"
+    else do
+        ty <- inferTypeExp env e1
+        checkExp env e2 ty
+        return Type_bool
 inferTypeExp env (EGtEq e1 e2) = do
+    if (e1 == ETrue || e1 == EFalse ||e2 == ETrue || e2 == EFalse) then fail "Cannot perform comparisons on Booleans.\n"
+    else do
+        ty <- inferTypeExp env e1
+        checkExp env e2 ty
+        return Type_bool
+inferTypeExp env (EEq e1 e2) = do
     ty <- inferTypeExp env e1
     checkExp env e2 ty
     return Type_bool
--- inferTypeExp env (EEq e1 e2) = do
--- inferTypeExp env (ENEq e1 e2) =
--- inferTypeExp env (EAnd e1 e2) = do
--- inferTypeExp env (EOr e1 e2) =
+inferTypeExp env (ENEq e1 e2) = do
+    ty <- inferTypeExp env e1
+    checkExp env e2 ty
+    return Type_bool
+inferTypeExp env (EAnd e1 e2) = do
+    ty <- inferTypeExp env e1
+    checkExp env e2 ty
+    return Type_bool
+inferTypeExp env (EOr e1 e2) = do
+    ty <- inferTypeExp env e1
+    checkExp env e2 ty
+    return Type_bool
 
 inferTypeExp env (EAss e1 e2) = do
     ty <- inferTypeExp env e1
@@ -222,13 +244,6 @@ inferTypeExp env (EAss e1 e2) = do
 inferTypeExp env (ETyped e ty) = do
     checkExp env e ty
     return ty
-
-
-
-{-
-Once you have all cases you can delete the next line which is only needed to catch all cases that are not yet implemented.
--}
-inferTypeExp _ e = fail $ "Missing case in inferTypeExp encountered:\n" ++ printTree e
 
 
 inferTypeOverloadedExp :: Env -> Alternative Type -> Exp -> [Exp] -> Err Type
