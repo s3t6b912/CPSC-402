@@ -173,7 +173,7 @@ inferTypeExp env (EId i) =
 inferTypeExp env (EApp i exps) = do
     funcSig <- lookupFun env i
     if (length (fst funcSig) /= (length exps)) then fail "Incorrect number of arguments"
-    else do forM_ (zip exps (fst funcSig)) (\p -> checkExp  env (fst p) (snd p))
+    else do forM_ (zip exps (fst funcSig)) (\e -> checkExp  env (fst e) (snd e))
     return (snd funcSig)
 inferTypeExp env (EPIncr e) =
     inferTypeOverloadedExp env (Alternative [Type_int,Type_double]) e []
