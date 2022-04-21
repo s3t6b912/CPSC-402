@@ -159,7 +159,7 @@ evalStm (SInit _ i e) = do
     v <- evalExp e
     extendContext i v
     return Nothing
---evalStm SReturnVoid =
+evalStm SReturnVoid = return Nothing
 
 evalStm (SReturn e) = do
     v <- evalExp e
@@ -173,21 +173,26 @@ evalStm (SWhile e stm) = do
         Nothing -> evalStm (SWhile e stm)
         Just _ -> return v'
     else return Nothing
---evalStm (SIfElse e stm1 stm2) =
+evalStm (SIfElse e stm1 stm2) = do
+    v <- pushPop (evalExp e)
+    if (v == VTrue) then
+        pushPop (evalStm stm1)
+    else
+        pushPop (evalStm stm2)
 
-evalStm stm =
-    fail $ "Missing case in evalStm " ++ printTree stm ++ "\n"
+--evalStm stm =
+    --fail $ "Missing case in evalStm " ++ printTree stm ++ "\n"
 
 evalExp :: Interpreter i => Exp -> i Value
 evalExp ETrue = return VTrue
-{-
-evalExp EFalse =
--}
+
+evalExp EFalse = return VFalse
+
 evalExp (EInt i) = return $ VInt i
-{-
-evalExp (EDouble d) =
-evalExp (EString _) =
--}
+
+evalExp (EDouble d) = return $ VDouble d
+evalExp (EString _) = return $ VUndefined
+
 evalExp (EId i) =
     lookupContext i
 evalExp (EApp i exps) = do
@@ -227,48 +232,105 @@ evalExp (EPIncr e@(EId i)) = do
     updateContext i val'
     return val
 evalExp (EPIncr e) = fail $ "Expected " ++ printTree e ++ " to be an id."
-{-
-evalExp (EPDecr e@(EId i)) =
-evalExp (EPDecr e) =
--}
+
+evalExp (EPDecr e@(EId i)) = do
+    val <- evalExp (EId i)
+    val' <- subValue val (VInt 1)
+    updateContext i val'
+    return val
+evalExp (EPDecr e) = fail $ "Expected " ++ printTree e ++ " to be an id."
+
 evalExp (EIncr e@(EId i)) = do
     val <- evalExp (EId i)
     val' <- addValue val (VInt 1)
     updateContext i val'
     return val'
-{-
+
 evalExp (EIncr e) = fail $ "Expected " ++ printTree e ++ " to be an id."
-evalExp (EDecr e@(EId i)) =
-evalExp (EDecr e) =
--}
+evalExp (EDecr e@(EId i)) = do
+    val <- evalExp (EId i)
+    val' <- subValue val (VInt 1)
+    updateContext i val'
+    return val'
+evalExp (EDecr e) = fail $ "Expected " ++ printTree e ++ " to be an id."
+
 evalExp (ETimes e1 e2) = applyFun mulValue e1 e2
 
---evalExp (EDiv e1 e2)   =
+evalExp (EDiv e1 e2)   = applyFun divValue e1 e2
 evalExp (EPlus e1 e2)  = applyFun addValue e1 e2
---evalExp (EMinus e1 e2) =
+evalExp (EMinus e1 e2) = applyFun subValue e1 e2
 
 evalExp (ELt e1 e2)    = do
     v1 <- evalExp e1
     v2 <- evalExp e2
     ltValue v1 v2
-{-
-evalExp (EGt e1 e2)    =
-evalExp (ELtEq e1 e2)  =
-evalExp (EGtEq e1 e2)  =
-evalExp (EEq e1 e2)    =
-evalExp (ENEq e1 e2) =
-evalExp (EAnd e1 e2) =
-evalExp (EOr e1 e2) =
--}
+
+evalExp (EGt e1 e2)    = do
+    v1 <- evalExp e1
+    v2 <- evalExp e2
+    gtValue v1 v2
+evalExp (ELtEq e1 e2)  = do
+    v1 <- evalExp e1
+    v2 <- evalExp e2
+    res  <- ltValue v1 v2
+    if (res == VTrue) then
+        return VTrue
+    else do
+        if (v1 == v2) then
+            return VTrue
+        else
+            return VFalse
+evalExp (EGtEq e1 e2)  = do
+    v1 <- evalExp e1
+    v2 <- evalExp e2
+    res  <- gtValue v1 v2
+    if (res == VTrue) then
+        return VTrue
+    else do
+        if (v1 == v2) then
+            return VTrue
+        else
+            return VFalse
+evalExp (EEq e1 e2)    = do
+    v1 <- evalExp e1
+    v2 <- evalExp e2
+    if (v1 == v2) then
+        return VTrue
+    else
+        return VFalse
+evalExp (ENEq e1 e2) = do
+    v1 <- evalExp e1
+    v2 <- evalExp e2
+    if (v1 == v2) then
+        return VFalse
+    else
+        return VTrue
+evalExp (EAnd e1 e2) = do
+    v1  <- evalExp e1
+    if (v1 == VTrue) then do
+        v2 <- evalExp e2
+        return v2
+    else
+        return VFalse
+evalExp (EOr e1 e2) = do
+    v1  <- evalExp e1
+    if (v1 == VFalse) then do
+        v2 <- evalExp e2
+        return v2
+    else
+        return VTrue
+
 evalExp (EAss (EId i) e) = do
     v <- evalExp e
     updateContext i v
     return v
-{-
-evalExp (EAss _ _) =
-evalExp (ETyped e _) =
--}
-evalExp e = fail $ "Missing case in evalExp." ++ printTree e ++ "\n"
+
+evalExp (EAss _ _) = fail $ "Missing id or expression.\n"
+evalExp (ETyped e _) = do
+    v <- evalExp e
+    return v
+
+--evalExp e = fail $ "Missing case in evalExp." ++ printTree e ++ "\n"
 
 
 applyFun :: Interpreter i => (Value -> Value -> i Value) -> Exp -> Exp -> i Value
