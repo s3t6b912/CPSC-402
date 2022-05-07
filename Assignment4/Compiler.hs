@@ -427,8 +427,18 @@ compileExp n (EEq e1 e2)    = compileArith e1 e2 s_i32_eq s_f64_eq
 compileExp n (ENEq e1 e2)   = compileArith e1 e2 s_i32_ne s_f64_ne
 
 -- for And and Or use if/then/else
--- compileExp _ (EAnd e1 e2) = do
--- compileExp _ (EOr e1 e2) = do
+compileExp _ (EAnd e1 e2) = do
+    s_e1 <- compileExp Nested e1
+    s_e2 <- compileExp Nested e2
+    let inner = s_e2 ++ [s_if_then_else (compileType Type_int) [s_i32_const 1] [s_i32_const 0]]
+    let outer = s_e1 ++ [s_if_then_else (compileType Type_int) inner [s_i32_const 0]]
+    return $ outer
+compileExp _ (EOr e1 e2) = do
+    s_e1 <- compileExp Nested e1
+    s_e2 <- compileExp Nested e2
+    let inner = s_e2 ++ [s_if_then_else (compileType Type_int) [s_i32_const 1] [s_i32_const 0]]
+    let outer = s_e1 ++ [s_if_then_else (compileType Type_int) [s_i32_const 1] inner]
+    return $ outer
 
 compileExp n (EAss (EId i) e) = do
     s_exp <- compileExp Nested e
