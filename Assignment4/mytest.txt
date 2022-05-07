@@ -1,0 +1,1 @@
+All of the custom test programs are from the readme except for easy_and.cc and easy_or.cc. These are to simply test the and and or functions and store two boolean variables and return the and and or result.
